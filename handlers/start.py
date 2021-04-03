@@ -2,46 +2,6 @@ from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 
 
-@Client.on_message(
-    filters.command("start")
-    & filters.private
-    & ~ filters.edited
-)
-async def start_(client: Client, message: Message):
-    await message.reply_text(
-        f"""<b>👋🏻 Hi {message.from_user.first_name}!</b>
-
-I am Group Music Probot, I Am an Advance And Powerful Telegram Groups Voice Chat Music Bot.
-
-To add in your group contact us at @Cutiepii_Support
-
-/help Use the Commands Button For Commends List.""",
-        reply_markup=InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "Group Management Bot", url="https://t.me/Cutiepii_Robot"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "Support Group", url="https://t.me/Cutiepii_Support"
-                    ),
-                    InlineKeyboardButton(
-                        "Updates Channel", url="https://t.me/Techno_Ocean"
-                    ),
-                    InlineKeyboardButton(
-                        "Music Lovers", url="https://t.me/Hindi_K_Drama_1" )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "Developer", url="https://t.me/Awesome_RJ"
-                    )
-                ]
-            ]
-        )
-    )
-
 
 @Client.on_message(
     filters.command("start")
@@ -67,13 +27,15 @@ async def start(client: Client, message: Message):
     
     
 @Client.on_message(
-    filters.command("help")
+    filters.command("Start")
     & filters.private
     & ~ filters.edited
 )
 async def start_(client: Client, message: Message):
     await message.reply_text(
 f"""<b> Hy Music Lover {message.from_user.first_name} Commends Are Here</b>
+
+I am Group Music Probot, I Am an Advance And Powerful Telegram Groups Voice Chat Music Bot.
 
 /reload -> To search the song on Youtube and play the first matching result.
 /saavn -> To search song on jio saavan and play the first result
