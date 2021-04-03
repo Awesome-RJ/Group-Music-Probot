@@ -85,7 +85,7 @@ async def play(client: Client, message_: Message):
         m = await client.send_photo(
         chat_id=message_.chat.id,
         photo="https://telegra.ph/file/8262082f0ab2c5d7ca2fb.png",
-        caption=f"Playing Your song Via  [Grooup Music Probot](https://t.me/Cuetiepii_Support).",
+        caption=f"Playing Your song Via  [Group Music Probot](https://t.me/cutiepii_robot).",
          ) 
         tgcalls.pytgcalls.join_group_call(message_.chat.id, file_path)
 
