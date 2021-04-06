@@ -37,7 +37,7 @@ f"""<b> Hy Music Lover {message.from_user.first_name} Commends Are Here</b>
 
 I am Group Music Probot, I Am an Advance And Powerful Telegram Groups Voice Chat Music Bot.
 
-/reload -> To search the song on Youtube and play the first matching result.
+/ytt -> To search the song on Youtube and play the first matching result..
 /saavn -> To search song on jio saavan and play the first result
 /deezer -> To search song on deezer and play good quality stream.
 /play -> Reply this in response to a link or any telegram audio file it will be played.
@@ -45,8 +45,9 @@ I am Group Music Probot, I Am an Advance And Powerful Telegram Groups Voice Chat
 /skip -> to skip current song
 /resume -> to resume the playback.
 /stop or /kill -> to stop the streaming of song.
+/admincache -> to refresh the admin cache
 
-Note:- Add Assistant And Bot Make Admin Then Promote To Admin.
+*Note:-* Add @Group_music_pro and @Group_music_Probot to your group and make admin.
 """,
        
         reply_markup=InlineKeyboardMarkup(
