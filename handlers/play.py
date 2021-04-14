@@ -235,7 +235,8 @@ async def play(_, message: Message):
         position = await queues.put(message.chat.id, file=file_path)
         await message.reply_photo(
         photo="final.png", 
-        caption=f"#⃣ Your requested song **queued** at position {position}!",
+        caption="f"🏷 **Name:** [{title[:35]}]({url})\n⏳ **Duration:** {duration}\n" \
+               + f"🎧 **Requested By:** {requested_by}\n📡 **Platform:** Deezer",
         reply_markup=keyboard)
         os.remove("final.png")
         return await lel.delete()
