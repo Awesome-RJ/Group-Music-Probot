@@ -258,7 +258,7 @@ async def play(_, message: Message):
 @Client.on_message(
     filters.command("saavn")
     & filters.group
-    & ~ filters.edited
+    & filters.edited
 )
 async def jiosaavn(client: Client, message_: Message):
     requested_by = message_.from_user.first_name
