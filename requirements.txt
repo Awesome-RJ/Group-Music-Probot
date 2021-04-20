@@ -5,10 +5,14 @@ python-dotenv
 youtube_dl
 youtube_search_python
 requests
-aiohttp==3.6.2
+aiohttp
 aiofiles
 asyncio
 youtube_search
 search_engine_parser
 ffmpeg
 Pillow
+python-arq
+future
+psutil
+wget
