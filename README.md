@@ -2,7 +2,7 @@
 
 ### A bot that can play music on telegram group's voice call
 
-# Available on telegram as @DaisyXbot
+# Available on telegram as @Group_Music_Probot
 
 <p align="center">
   <img src="https://telegra.ph/file/70008107133ae8f4d1f1f.jpg">
