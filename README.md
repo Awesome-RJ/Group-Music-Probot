@@ -18,6 +18,7 @@
 - DEEZER,YOUTUBE & SAAVN PLAYBACK SUPPORTED
 - Settings panel
 - Control with buttons
+- Userbot auto join
 
 ### Commands 🛠
 #### For all in group
@@ -40,6 +41,8 @@
 - `/skip` - play next song
 - `/end` - stop music play
 - `/userbotjoin` - invite assistant to your chat
+- `/userbotleave` - remove assistant from your chat
+- `/admincache` - Refresh admin list
 
 #### Based on Callsmusic-1
 
