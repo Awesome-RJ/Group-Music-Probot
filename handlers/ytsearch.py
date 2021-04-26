@@ -1,4 +1,3 @@
-# the logging things
 import logging
 
 from pyrogram.types import Message

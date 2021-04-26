@@ -402,41 +402,51 @@ async def play(_, message: Message):
     lel = await message.reply("🔄 **Processing**")
     administrators = await get_administrators(message.chat)
     chid = message.chat.id
-    usar = await USER.get_me()
+
+    try:
+        user = await USER.get_me()
+    except:
+        user.first_name =  "helper"
+    usar = user
     wew = usar.id
-    for administrator in administrators:
-       if administrator == message.from_user.id:  
-               try:
-                   invitelink = await _.export_chat_invite_link(chid)
-               except:
-                   await lel.edit(
-                       "<b>Add me as admin of yor group first</b>",
-                   )
-                   return
+    try:
+        #chatdetails = await USER.get_chat(chid)
+        lmoa = await _.get_chat_member(chid,wew)
+    except:
+           for administrator in administrators:
+                      if administrator == message.from_user.id:  
+                          try:
+                              invitelink = await _.export_chat_invite_link(chid)
+                          except:
+                              await lel.edit(
+                                  "<b>Add me as admin of yor group first</b>",
+                              )
+                              return
 
-               try:
-                   await USER.join_chat(invitelink)
-                   await lel.edit(
-                       "<b> userbot joined your chat</b>",
-                   )
+                          try:
+                              await USER.join_chat(invitelink)
+                              await USER.send_message(message.chat.id,"I joined this group for playing music in VC")
+                              await lel.edit(
+                                  "<b>helper userbot joined your chat</b>",
+                              )
 
-               except UserAlreadyParticipant:
-                   pass
-               except Exception as e:
-                   #print(e)
-                   #await lel.edit(
-                   #    f"<b>User {user.first_name} couldn't join your group! Make sure user is not banned in group."
-                   #    "\n\nOr manually add @DaisyXmusic to your Group and try again</b>",
-                   #)
-                   pass
+                          except UserAlreadyParticipant:
+                              pass
+                          except Exception as e:
+                              #print(e)
+                              await lel.edit(
+                                  f"<b>🔴 Flood Wait Error 🔴 \nUser {user.first_name} couldn't join your group due to heavy requests for userbot! Make sure user is not banned in group."
+                                  "\n\nOr manually add @Group_Music_Pro to your Group and try again</b>",
+                              )
+                              pass
     try:
         chatdetails = await USER.get_chat(chid)
-        #lmoa = await _.get_chat_member(chid,wew)
+        #lmoa = await client.get_chat_member(chid,wew)
     except:
         await lel.edit(
-            "<i>helper Userbot not in this chat, Ask admin to send /play command for first time or add assistant manually</i>"
+            f"<i> {user.first_name} Userbot not in this chat, Ask admin to send /play command for first time or add {user.first_name} manually</i>"
         )
-        return    
+        return     
     sender_id = message.from_user.id
     sender_name = message.from_user.first_name
     await lel.edit("🔎 **Finding**")
@@ -523,7 +533,7 @@ async def play(_, message: Message):
         await message.reply_photo(
         photo="final.png",
         reply_markup=keyboard,
-        caption="▶️ **Playing** here the song requested by {} via Group Music Probot 😜".format(
+        caption="▶️ **Playing** here the song requested by {} via Group Music Probot 💜".format(
         message.from_user.mention()
         ),
     )
@@ -541,50 +551,51 @@ async def deezer(client: Client, message_: Message):
     lel = await message_.reply("🔄 **Processing**")
     administrators = await get_administrators(message_.chat)
     chid = message_.chat.id
-    usar = await USER.get_me()
+    try:
+        user = await USER.get_me()
+    except:
+        user.first_name =  "Group_Music_Probot"
+    usar = user
     wew = usar.id
-    for administrator in administrators:
-       if administrator == message_.from_user.id:  
-               try:
-                   invitelink = await client.export_chat_invite_link(chid)
-               except:
-                   await lel.edit(
-                       "<b>Add me as admin of yor group first</b>",
-                   )
-                   return
+    try:
+        #chatdetails = await USER.get_chat(chid)
+        lmoa = await client.get_chat_member(chid,wew)
+    except:
+           for administrator in administrators:
+                      if administrator == message_.from_user.id:  
+                          try:
+                              invitelink = await client.export_chat_invite_link(chid)
+                          except:
+                              await lel.edit(
+                                  "<b>Add me as admin of yor group first</b>",
+                              )
+                              return
 
-               try:
-                   await USER.join_chat(invitelink)
-                   await lel.edit(
-                       "<b>helper userbot joined your chat</b>",
-                   )
+                          try:
+                              await USER.join_chat(invitelink)
+                              await USER.send_message(message_.chat.id,"I joined this group for playing music in VC")
+                              await lel.edit(
+                                  "<b>helper userbot joined your chat</b>",
+                              )
 
-               except UserAlreadyParticipant:
-                   pass
-               except Exception as e:
-                   #print(e)
-                   #await lel.edit(
-                   #    f"<b>User {user.first_name} couldn't join your group! Make sure user is not banned in group."
-                   #    "\n\nOr manually add @DaisyXmusic to your Group and try again</b>",
-                   #)
-                   pass
+                          except UserAlreadyParticipant:
+                              pass
+                          except Exception as e:
+                              #print(e)
+                              await lel.edit(
+                                  f"<b>🔴 Flood Wait Error 🔴 \nUser {user.first_name} couldn't join your group due to heavy requests for userbot! Make sure user is not banned in group."
+                                  "\n\nOr manually add @Group_Music_Pro to your Group and try again</b>",
+                              )
+                              pass
     try:
         chatdetails = await USER.get_chat(chid)
         #lmoa = await client.get_chat_member(chid,wew)
     except:
         await lel.edit(
-            "<i> @helper Userbot not in this chat, Ask admin to send /play command for first time or add assistant manually</i>"
+            f"<i> {user.first_name} Userbot not in this chat, Ask admin to send /play command for first time or add {user.first_name} manually</i>"
         )
         return                            
-    requested_by = message_.from_user.first_name
-    try:
-        #chatdetails = await USER.get_chat(chid)
-        lmoa = await client.get_chat_member(chid,wew)
-    except:
-        await lel.reply(
-            "<i>Looks like helper Userbot not in this chat, Ask admin to send /play command for first time or add assistant manually</i>"
-        )
-        pass    
+    requested_by = message_.from_user.first_name   
 
     text = message_.text.split(" ", 1)
     queryy = text[1]
@@ -636,7 +647,7 @@ async def deezer(client: Client, message_: Message):
         loc = file_path
         appendable = [s_name, r_by, loc]
         qeue.append(appendable)
-        await res.edit_text(f"Playing [{title}]({url}) Via Deezer")
+        await res.edit_text(f"#️⃣ Queued at position {position}")
     else:
         await res.edit_text("▶️ Playing.....")
         chat_id = message_.chat.id
@@ -655,7 +666,7 @@ async def deezer(client: Client, message_: Message):
         chat_id=message_.chat.id,
         reply_markup=keyboard,
         photo="final.png",
-        caption=f"#️⃣ Queued at position {position}.)."
+        caption=f"Playing [{title}]({url}) Via Deezer"
     ) 
     os.remove("final.png")
 
@@ -670,34 +681,42 @@ async def jiosaavn(client: Client, message_: Message):
     lel = await message_.reply("🔄 **Processing**")
     administrators = await get_administrators(message_.chat)
     chid = message_.chat.id
-    usar = await USER.get_me()
+    try:
+        user = await USER.get_me()
+    except:
+        user.first_name =  "DaisyMusic"
+    usar = user
     wew = usar.id
+    try:
+        #chatdetails = await USER.get_chat(chid)
+        lmoa = await client.get_chat_member(chid,wew)
+    except:
+           for administrator in administrators:
+                      if administrator == message_.from_user.id:  
+                          try:
+                              invitelink = await client.export_chat_invite_link(chid)
+                          except:
+                              await lel.edit(
+                                  "<b>Add me as admin of yor group first</b>",
+                              )
+                              return
 
-    for administrator in administrators:
-       if administrator == message_.from_user.id:  
-               try:
-                   invitelink = await client.export_chat_invite_link(chid)
-               except:
-                   await lel.edit(
-                       "<b>Add me as admin of yor group first</b>",
-                   )
-                   return
+                          try:
+                              await USER.join_chat(invitelink)
+                              await USER.send_message(message_.chat.id,"I joined this group for playing music in VC")
+                              await lel.edit(
+                                  "<b>helper userbot joined your chat</b>",
+                              )
 
-               try:
-                   await USER.join_chat(invitelink)
-                   await lel.edit(
-                       "<b>helper userbot joined your chat</b>",
-                   )
-
-               except UserAlreadyParticipant:
-                   pass
-               except Exception as e:
-                   #print(e)
-                   #await lel.edit(
-                   #    f"<b>User {user.first_name} couldn't join your group! Make sure user is not banned in group."
-                   #    "\n\nOr manually add @DaisyXmusic to your Group and try again</b>",
-                   #)
-                   pass
+                          except UserAlreadyParticipant:
+                              pass
+                          except Exception as e:
+                              #print(e)
+                              await lel.edit(
+                                  f"<b>🔴 Flood Wait Error 🔴 \nUser {user.first_name} couldn't join your group due to heavy requests for userbot! Make sure user is not banned in group."
+                                  "\n\nOr manually add @Group_Music_Pro to your Group and try again</b>",
+                              )
+                              pass
     try:
         chatdetails = await USER.get_chat(chid)
         #lmoa = await client.get_chat_member(chid,wew)
@@ -705,7 +724,7 @@ async def jiosaavn(client: Client, message_: Message):
         await lel.edit(
             "<i> helper Userbot not in this chat, Ask admin to send /play command for first time or add assistant manually</i>"
         )
-        return                         
+        return     
     requested_by = message_.from_user.first_name
     chat_id=message_.chat.id
     text = message_.text.split(" ", 1)
@@ -739,7 +758,7 @@ async def jiosaavn(client: Client, message_: Message):
              [
                InlineKeyboardButton(
                    text="Join Updates Channel",
-                   url='https://t.me/Techno_Ocean')
+                   url='https://t.me/daisyxupdates')
              ],
              [       
                InlineKeyboardButton(
