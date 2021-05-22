@@ -9,34 +9,44 @@ GROUP_MUSIC_PROBOT_IMG = "https://telegra.ph/file/70008107133ae8f4d1f1f.jpg"
 
 logging.basicConfig(level=logging.INFO)
 
-@Client.on_message(filters.private & filters.incoming & filters.command(['start']))
-def _start(client, message):
-    client.reply_photo(GROUP_MUSIC_PROBOT_IMG, message.chat.id,
-        text=tr.START_MSG.format(message.from_user.first_name, message.from_user.id),
-        parse_mode="markdown",
+@Client.on_message(filters.command("start") & filters.private & ~filters.channel)
+async def start(_, message: Message):
+    await message.reply_photo(GROUP_MUSIC_PROBOT_IMG)
+    await message.reply_text(
+        f"""**Hey, I'm {bn} 🎵
+I Am an Advance And Powerful Telegram Groups Voice Chat Music Bot.
+Note:- Add @NexusMusicRobot and @NexusMusicAssistant to your group and make the bot an admin.
+        """,
         reply_markup=InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton(
-                        "➕ Add me to your Group 🙋‍♀️", url=f"https://t.me/{BOT_USERNAME}?startgroup=true")],
-                [
+                        "🛠 Commands 🛠", url="https://telegra.ph/Nexus-Music-Bot-Commands-05-17")
+                  ],[
                     InlineKeyboardButton(
-                        "📲 Updates", url=f"https://t.me/{UPDATES_CHANNEL}"), 
+                        "🗼Our Network🗼", url="https://t.me/nexusgroups"
+                    ),
                     InlineKeyboardButton(
-                        "💬 Support", url=f"https://t.me/{SUPPORT_GROUP}")
-                ],[
+                        "💬 Support Group", url="https://t.me/PainRobotSupport"
+                    )
+                ],[ 
                     InlineKeyboardButton(
-                        "🌐 Network", url=f"https://t.me/Yuki_Network")
-                ]
+                        "💁 Assistant 💁", url="https://t.me/NexusMusicAssistant"
+                    )],
+                    [ 
+                    InlineKeyboardButton(
+                        " Add This Bot To Your Group ", url="https://t.me/NexusMusicRobot?startgroup=true"
+                    )]
             ]
         ),
-        reply_to_message_id=message.message_id
-        )
+     disable_web_page_preview=True
+    )
+    
 
 @Client.on_message(filters.command("start") & ~filters.private & ~filters.channel)
 async def gstart(_, message: Message):
     await message.reply_text(
-        f"""**🔴 {PROJECT_NAME} is online**""",
+        f"""*💜 {PROJECT_NAME} is online**""",
         reply_markup=InlineKeyboardMarkup(
             [
                 [
