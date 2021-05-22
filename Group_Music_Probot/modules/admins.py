@@ -1,4 +1,4 @@
-]from asyncio.queues import QueueEmpty
+from asyncio.queues import QueueEmpty
 from Group_Music_Probot.config import que
 from pyrogram import Client, filters
 from pyrogram.types import Message
