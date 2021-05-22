@@ -16,33 +16,34 @@ async def start(_, message: Message):
     await message.reply_photo(GROUP_MUSIC_PROBOT_IMG)
     await message.reply_text(
         f"""**Hey, I'm {bn} 🎵
-I Am an Advance And Powerful Telegram Groups Voice Chat Music Bot.
-Note:- Add @NexusMusicRobot and @NexusMusicAssistant to your group and make the bot an admin.
+I am Group Music Probot, I Am an Advance And Powerful Telegram Groups Voice Chat Music Bot.
+Note:- Add @Group_music_pro and @Group_music_Probot to your group and make an admin.
         """,
         reply_markup=InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton(
-                        "🛠 Commands 🛠", url="https://telegra.ph/Nexus-Music-Bot-Commands-05-17")
+                        "🛠 Commands 🛠", url="https://telegra.ph/Commands-04-20")
                   ],[
                     InlineKeyboardButton(
-                        "🗼Our Network🗼", url="https://t.me/nexusgroups"
+                        "💬 Music Lovers", url="https://t.me/Hindi_K_drama_1"
                     ),
                     InlineKeyboardButton(
-                        "💬 Support Group", url="https://t.me/PainRobotSupport"
+                        "💬 Support Group", url="https://t.me/Cutiepii_Support"
                     )
                 ],[ 
                     InlineKeyboardButton(
-                        "💁 Assistant 💁", url="https://t.me/NexusMusicAssistant"
+                        "💁 Assistant 💁", url="https://t.me/Group_Music_Pro"
                     )],
                     [ 
                     InlineKeyboardButton(
-                        " Add This Bot To Your Group ", url="https://t.me/NexusMusicRobot?startgroup=true"
+                        "➕ Add To Your Group ➕", url="https://t.me/Group_Music_ProBot?startgroup=true"
                     )]
             ]
         ),
      disable_web_page_preview=True
     )
+
     
 
 @Client.on_message(filters.command("start") & ~filters.private & ~filters.channel)
