@@ -4,6 +4,8 @@ from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from Group_Music_Probot.config import ASSISTANT_NAME,PROJECT_NAME,SUPPORT_GROUP,UPDATES_CHANNEL,BOT_USERNAME
 
+from config import BOT_NAME as bn
+
 
 GROUP_MUSIC_PROBOT_IMG = "https://telegra.ph/file/70008107133ae8f4d1f1f.jpg"
 
