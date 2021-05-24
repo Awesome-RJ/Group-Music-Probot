@@ -45,7 +45,7 @@ Note:- Add @Group_music_pro and @Group_music_Probot to your group and make an ad
     )
 
     
-
+    
 @Client.on_message(filters.command("start") & ~filters.private & ~filters.channel)
 async def gstart(_, message: Message):
     await message.reply_text(
