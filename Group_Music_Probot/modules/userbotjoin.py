@@ -1,9 +1,11 @@
+import asyncio
+
 from pyrogram import Client, filters
 from pyrogram.errors import UserAlreadyParticipant
 
 from Group_Music_Probot.helpers.decorators import authorized_users_only, errors
 from Group_Music_Probot.services.callsmusic.callsmusic import client as USER
-
+from Group_Music_Probot.config import SUDO_USERS
 
 @Client.on_message(filters.command(["userbotjoin"]) & ~filters.private & ~filters.bot)
 @authorized_users_only
@@ -21,7 +23,7 @@ async def addchannel(client, message):
     try:
         user = await USER.get_me()
     except:
-        user.first_name = "DaisyMusic"
+        user.first_name = "Group Music Probot"
 
     try:
         await USER.join_chat(invitelink)
@@ -34,7 +36,7 @@ async def addchannel(client, message):
         print(e)
         await message.reply_text(
             f"<b>🛑 Flood Wait Error 🛑 \n User {user.first_name} couldn't join your group due to heavy join requests for userbot! Make sure user is not banned in group."
-            "\n\nOr manually add @DaisyXhelper to your Group and try again</b>",
+            "\n\nOr manually add @Group_Music_Pro to your Group and try again</b>",
         )
         return
     await message.reply_text(
@@ -43,6 +45,7 @@ async def addchannel(client, message):
 
 
 @USER.on_message(filters.group & filters.command(["userbotleave"]))
+@authorized_users_only
 async def rem(USER, message):
     try:
         await USER.leave_chat(message.chat.id)
@@ -52,7 +55,23 @@ async def rem(USER, message):
             "\n\nOr manually kick me from to your Group</b>",
         )
         return
-
+    
+@Client.on_message(filters.command(["userbotleaveall"]))
+async def bye(client, message):
+    if message.from_user.id in SUDO_USERS:
+        left=0
+        failed=0
+        await message.reply("Assistant Leaving all chats")
+        for dialog in USER.iter_dialogs():
+            try:
+                await USER.leave_chat(dialog.chat.id)
+                left = left+1
+            except:
+                failed=failed+1
+            await asyncio.sleep(3)
+        await client.send_message(message.chat.id, f"Left {left} chats. Failed {failed} chats.")
+    
+    
 @Client.on_message(filters.command(["userbotjoinchannel","ubjoinc"]) & ~filters.private & ~filters.bot)
 @authorized_users_only
 @errors
@@ -90,7 +109,7 @@ async def addcchannel(client, message):
         print(e)
         await message.reply_text(
             f"<b>🛑 Flood Wait Error 🛑 \n User {user.first_name} couldn't join your channel due to heavy join requests for userbot! Make sure user is not banned in channel."
-            "\n\nOr manually add @DaisyXhelper to your Group and try again</b>",
+            "\n\nOr manually add @Group_Music_Pro to your Group and try again</b>",
         )
         return
     await message.reply_text(
