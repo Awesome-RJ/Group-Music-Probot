@@ -1,5 +1,7 @@
+
 import json
 import os
+from os import path
 from typing import Callable
 
 import aiofiles
@@ -9,29 +11,33 @@ import requests
 import wget
 from PIL import Image, ImageDraw, ImageFont
 from pyrogram import Client, filters
+from pyrogram.types import Voice
 from pyrogram.errors import UserAlreadyParticipant
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from Python_ARQ import ARQ
 from youtube_search import YoutubeSearch
 
-from Group_Music_Probot.config import ARQ_API_KEY
-from Group_Music_Probot.config import BOT_NAME as bn
-from Group_Music_Probot.config import DURATION_LIMIT
-from Group_Music_Probot.config import UPDATES_CHANNEL as updateschannel
-from Group_Music_Probot.config import que
-from Group_Music_Probot.function.admins import admins as a
-from Group_Music_Probot.helpers.admins import get_administrators
-from Group_Music_Probot.helpers.channelmusic import get_chat_id
-from Group_Music_Probot.helpers.decorators import authorized_users_only
-from Group_Music_Probot.helpers.filters import command, other_filters
-from Group_Music_Probot.helpers.gets import get_file_name
-from Group_Music_Probot.services.callsmusic import callsmusic, queues
-from Group_Music_Probot.services.callsmusic.callsmusic import client as USER
-from Group_Music_Probot.services.converter.converter import convert
-from Group_Music_Probot.services.downloaders import youtube
+from Group-Music-Probot.config import ARQ_API_KEY
+from Group-Music-Probot.config import BOT_NAME as bn
+from Group-Music-Probot.config import DURATION_LIMIT
+from Group-Music-Probot.config import UPDATES_CHANNEL as updateschannel
+from Group-Music-Probot.config import que
+from Group-Music-Probot.function.admins import admins as a
+from Group-Music-Probot.helpers.admins import get_administrators
+from Group-Music-Probot.helpers.channelmusic import get_chat_id
+from Group-Music-Probot.helpers.errors import DurationLimitError
+from Group-Music-Probot.helpers.decorators import errors
+from Group-Music-Probot.helpers.decorators import authorized_users_only
+from Group-Music-Probot.helpers.filters import command, other_filters
+from Group-Music-Probot.helpers.gets import get_file_name
+from Group-Music-Probot.services.callsmusic import callsmusic, queues
+from Group-Music-Probot.services.callsmusic.callsmusic import client as USER
+from Group-Music-Probot.services.converter.converter import convert
+from Group-Music-Probot.services.downloaders import youtube
 
+aiohttpsession = aiohttp.ClientSession()
 chat_id = None
-arq = ARQ("https://thearq.tech", ARQ_API_KEY)
+arq = ARQ("https://thearq.tech", ARQ_API_KEY, aiohttpsession)
 
 
 def cb_admin_check(func: Callable) -> Callable:
@@ -437,8 +443,24 @@ async def play(_, message: Message):
         return
     message.from_user.id
     message.from_user.first_name
+    text_links=None
     await lel.edit("🔎 **Finding**")
     message.from_user.id
+    if message.reply_to_message:
+        entities = []
+        toxt = message.reply_to_message.text or message.reply_to_message.caption
+        if message.reply_to_message.entities:
+            entities = message.reply_to_message.entities + entities
+        elif message.reply_to_message.caption_entities:
+            entities = message.reply_to_message.entities + entities
+        urls = [entity for entity in entities if entity.type == 'url']
+        text_links = [
+            entity for entity in entities if entity.type == 'text_link'
+        ]
+    else:
+        urls=None
+    if text_links:
+        urls = True
     user_id = message.from_user.id
     message.from_user.first_name
     user_name = message.from_user.first_name
@@ -470,11 +492,52 @@ async def play(_, message: Message):
         views = "Locally added"
         requested_by = message.from_user.first_name
         await generate_cover(requested_by, title, views, duration, thumbnail)
-        file_path = await converter.convert(
+        file_path = await convert(
             (await message.reply_to_message.download(file_name))
             if not path.isfile(path.join("downloads", file_name))
             else file_name
         )
+    elif urls:
+        query = toxt
+        await lel.edit("🎵 **Processing**")
+        ydl_opts = {"format": "bestaudio[ext=m4a]"}
+        try:
+            results = YoutubeSearch(query, max_results=1).to_dict()
+            url = f"https://youtube.com{results[0]['url_suffix']}"
+            # print(results)
+            title = results[0]["title"][:40]
+            thumbnail = results[0]["thumbnails"][0]
+            thumb_name = f"thumb{title}.jpg"
+            thumb = requests.get(thumbnail, allow_redirects=True)
+            open(thumb_name, "wb").write(thumb.content)
+            duration = results[0]["duration"]
+            results[0]["url_suffix"]
+            views = results[0]["views"]
+
+        except Exception as e:
+            await lel.edit(
+                "Song not found.Try another song or maybe spell it properly."
+            )
+            print(str(e))
+            return
+        dlurl=url
+        dlurl=dlurl.replace("youtube","youtubepp")
+        keyboard = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton("📖 Playlist", callback_data="playlist"),
+                    InlineKeyboardButton("Menu ⏯ ", callback_data="menu"),
+                ],
+                [
+                    InlineKeyboardButton(text="🎬 YouTube", url=f"{url}"),
+                    InlineKeyboardButton(text="Download 📥", url=f"{dlurl}"),
+                ],
+                [InlineKeyboardButton(text="❌ Close", callback_data="cls")],
+            ]
+        )
+        requested_by = message.from_user.first_name
+        await generate_cover(requested_by, title, views, duration, thumbnail)
+        file_path = await convert(youtube.download(url))        
     else:
         query = ""
         for i in message.command[1:]:
@@ -501,14 +564,18 @@ async def play(_, message: Message):
             )
             print(str(e))
             return
-
+        dlurl=url
+        dlurl=dlurl.replace("youtube","youtubepp")
         keyboard = InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton("📖 Playlist", callback_data="playlist"),
                     InlineKeyboardButton("Menu ⏯ ", callback_data="menu"),
                 ],
-                [InlineKeyboardButton(text="Watch On YouTube 🎬", url=f"{url}")],
+                [
+                    InlineKeyboardButton(text="🎬 YouTube", url=f"{url}"),
+                    InlineKeyboardButton(text="Download 📥", url=f"{dlurl}"),
+                ],
                 [InlineKeyboardButton(text="❌ Close", callback_data="cls")],
             ]
         )
@@ -565,7 +632,7 @@ async def deezer(client: Client, message_: Message):
     try:
         user = await USER.get_me()
     except:
-        user.first_name = "DaisyMusic"
+        user.first_name = "Group Music Probot"
     usar = user
     wew = usar.id
     try:
@@ -616,15 +683,20 @@ async def deezer(client: Client, message_: Message):
 
     text = message_.text.split(" ", 1)
     queryy = text[1]
+    query = queryy
     res = lel
     await res.edit(f"Searching 👀👀👀 for `{queryy}` on deezer")
     try:
-        r = await arq.deezer(query=queryy, limit=1)
-        title = r[0]["title"]
-        duration = int(r[0]["duration"])
-        thumbnail = r[0]["thumbnail"]
-        artist = r[0]["artist"]
-        url = r[0]["url"]
+        songs = await arq.deezer(query,1)
+        if not songs.ok:
+            await message_.reply_text(songs.result)
+            return
+        title = songs.result[0].title
+        url = songs.result[0].url
+        artist = songs.result[0].artist
+        duration = songs.result[0].duration
+        thumbnail = "https://telegra.ph/file/f2659b2bb623d85053a4b.png"
+
     except:
         await res.edit("Found Literally Nothing, You Should Work On Your English!")
         return
@@ -725,7 +797,7 @@ async def jiosaavn(client: Client, message_: Message):
                     # print(e)
                     await lel.edit(
                         f"<b>🔴 Flood Wait Error 🔴 \nUser {user.first_name} couldn't join your group due to heavy requests for userbot! Make sure user is not banned in group."
-                        "\n\nOr manually add @Group_Music_Probot to your Group and try again</b>",
+                        "\n\nOr manually add @Group_Music_Pro to your Group and try again</b>",
                     )
     try:
         await USER.get_chat(chid)
@@ -742,16 +814,15 @@ async def jiosaavn(client: Client, message_: Message):
     res = lel
     await res.edit(f"Searching 👀👀👀 for `{query}` on jio saavn")
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                f"https://jiosaavnapi.bhadoo.uk/result/?query={query}"
-            ) as resp:
-                r = json.loads(await resp.text())
-        sname = r[0]["song"]
-        slink = r[0]["media_url"]
-        ssingers = r[0]["singers"]
-        sthumb = r[0]["image"]
-        sduration = int(r[0]["duration"])
+        songs = await arq.saavn(query)
+        if not songs.ok:
+            await message_.reply_text(songs.result)
+            return
+        sname = songs.result[0].song
+        slink = songs.result[0].media_url
+        ssingers = songs.result[0].singers
+        sthumb = songs.result[0].image
+        sduration = int(songs.result[0].duration)
     except Exception as e:
         await res.edit("Found Literally Nothing!, You Should Work On Your English.")
         print(str(e))
@@ -764,7 +835,7 @@ async def jiosaavn(client: Client, message_: Message):
             ],
             [
                 InlineKeyboardButton(
-                    text="Join Updates Channel", url=f"{updateschannel}"
+                    text="Join Updates Channel", url=f"https://t.me/{updateschannel}"
                 )
             ],
             [InlineKeyboardButton(text="❌ Close", callback_data="cls")],
@@ -812,6 +883,3 @@ async def jiosaavn(client: Client, message_: Message):
         caption=f"Playing {sname} Via Jiosaavn",
     )
     os.remove("final.png")
-
-
-# Have u read all. If read RESPECT :-)
