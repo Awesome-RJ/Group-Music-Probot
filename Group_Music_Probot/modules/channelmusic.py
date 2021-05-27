@@ -1,8 +1,6 @@
-
-
-
 import json
 import os
+from os import path
 from typing import Callable
 
 import aiofiles
@@ -13,6 +11,7 @@ import wget
 from PIL import Image, ImageDraw, ImageFont
 from pyrogram import Client, filters
 from pyrogram.errors import UserAlreadyParticipant
+from pyrogram.types import Voice
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from Python_ARQ import ARQ
 from youtube_search import YoutubeSearch
@@ -28,6 +27,8 @@ from Group_Music_Probot.config import DURATION_LIMIT
 from Group_Music_Probot.config import UPDATES_CHANNEL as updateschannel
 from Group_Music_Probot.config import que
 from Group_Music_Probot.function.admins import admins as a
+from Group_Music_Probot.helpers.errors import DurationLimitError
+from Group_Music_Probot.helpers.decorators import errors
 from Group_Music_Probot.helpers.admins import get_administrators
 from Group_Music_Probot.helpers.channelmusic import get_chat_id
 from Group_Music_Probot.helpers.decorators import authorized_users_only
@@ -407,6 +408,7 @@ async def play(_, message: Message):
         )
         return
     message.from_user.id
+    text_links = None
     message.from_user.first_name
     await lel.edit("🔎 **Finding**")
     message.from_user.id
@@ -414,6 +416,21 @@ async def play(_, message: Message):
     message.from_user.first_name
     user_name = message.from_user.first_name
     rpk = "[" + user_name + "](tg://user?id=" + str(user_id) + ")"
+    if message.reply_to_message:
+        entities = []
+        toxt = message.reply_to_message.text or message.reply_to_message.caption
+        if message.reply_to_message.entities:
+            entities = message.reply_to_message.entities + entities
+        elif message.reply_to_message.caption_entities:
+            entities = message.reply_to_message.entities + entities
+        urls = [entity for entity in entities if entity.type == 'url']
+        text_links = [
+            entity for entity in entities if entity.type == 'text_link'
+        ]
+    else:
+        urls=None
+    if text_links:
+        urls = True    
     audio = (
         (message.reply_to_message.audio or message.reply_to_message.voice)
         if message.reply_to_message
@@ -435,17 +452,58 @@ async def play(_, message: Message):
         )
         file_name = get_file_name(audio)
         title = file_name
-        thumb_name = "https://telegra.ph/file/f2659b2bb623d85053a4b.png"
+        thumb_name = "https://telegra.ph/file/f6086f8909fbfeb0844f2.png"
         thumbnail = thumb_name
         duration = round(audio.duration / 60)
         views = "Locally added"
         requested_by = message.from_user.first_name
         await generate_cover(requested_by, title, views, duration, thumbnail)
-        file_path = await converter.convert(
+        file_path = await convert(
             (await message.reply_to_message.download(file_name))
             if not path.isfile(path.join("downloads", file_name))
             else file_name
         )
+    elif urls:
+        query = toxt
+        await lel.edit("🎵 **Processing**")
+        ydl_opts = {"format": "bestaudio[ext=m4a]"}
+        try:
+            results = YoutubeSearch(query, max_results=1).to_dict()
+            url = f"https://youtube.com{results[0]['url_suffix']}"
+            # print(results)
+            title = results[0]["title"][:40]
+            thumbnail = results[0]["thumbnails"][0]
+            thumb_name = f"thumb{title}.jpg"
+            thumb = requests.get(thumbnail, allow_redirects=True)
+            open(thumb_name, "wb").write(thumb.content)
+            duration = results[0]["duration"]
+            results[0]["url_suffix"]
+            views = results[0]["views"]
+
+        except Exception as e:
+            await lel.edit(
+                "Song not found.Try another song or maybe spell it properly."
+            )
+            print(str(e))
+            return
+        dlurl = url
+        dlurl=dlurl.replace("youtube","youtubepp")
+        keyboard = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton("📖 Playlist", callback_data="cplaylist"),
+                    InlineKeyboardButton("Menu ⏯ ", callback_data="cmenu"),
+                ],
+                [
+                    InlineKeyboardButton(text="🎬 YouTube", url=f"{url}"),
+                    InlineKeyboardButton(text="Download 📥", url=f"{dlurl}"),
+                ],
+                [InlineKeyboardButton(text="❌ Close", callback_data="ccls")],
+            ]
+        )
+        requested_by = message.from_user.first_name
+        await generate_cover(requested_by, title, views, duration, thumbnail)
+        file_path = await convert(youtube.download(url))        
     else:
         query = ""
         for i in message.command[1:]:
@@ -473,13 +531,18 @@ async def play(_, message: Message):
             print(str(e))
             return
 
+        dlurl = url
+        dlurl=dlurl.replace("youtube","youtubepp")
         keyboard = InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton("📖 Playlist", callback_data="cplaylist"),
                     InlineKeyboardButton("Menu ⏯ ", callback_data="cmenu"),
                 ],
-                [InlineKeyboardButton(text="Watch On YouTube 🎬", url=f"{url}")],
+                [
+                    InlineKeyboardButton(text="🎬 YouTube", url=f"{url}"),
+                    InlineKeyboardButton(text="Download 📥", url=f"{dlurl}"),
+                ],
                 [InlineKeyboardButton(text="❌ Close", callback_data="ccls")],
             ]
         )
@@ -592,15 +655,19 @@ async def deezer(client: Client, message_: Message):
 
     text = message_.text.split(" ", 1)
     queryy = text[1]
+    query=queryy
     res = lel
     await res.edit(f"Searching 👀👀👀 for `{queryy}` on deezer")
     try:
-        r = await arq.deezer(query=queryy, limit=1)
-        title = r[0]["title"]
-        duration = int(r[0]["duration"])
-        thumbnail = r[0]["thumbnail"]
-        artist = r[0]["artist"]
-        url = r[0]["url"]
+        songs = await arq.deezer(query,1)
+        if not songs.ok:
+            await message_.reply_text(songs.result)
+            return
+        title = songs.result[0].title
+        url = songs.result[0].url
+        artist = songs.result[0].artist
+        duration = songs.result[0].duration
+        thumbnail = songs.result[0].thumbnail
     except:
         await res.edit("Found Literally Nothing, You Should Work On Your English!")
         return
@@ -722,16 +789,15 @@ async def jiosaavn(client: Client, message_: Message):
     res = lel
     await res.edit(f"Searching 👀👀👀 for `{query}` on jio saavn")
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                f"https://jiosaavnapi.bhadoo.uk/result/?query={query}"
-            ) as resp:
-                r = json.loads(await resp.text())
-        sname = r[0]["song"]
-        slink = r[0]["media_url"]
-        ssingers = r[0]["singers"]
-        sthumb = r[0]["image"]
-        sduration = int(r[0]["duration"])
+        songs = await arq.saavn(query)
+        if not songs.ok:
+            await message_.reply_text(songs.result)
+            return
+        sname = songs.result[0].song
+        slink = songs.result[0].media_url
+        ssingers = songs.result[0].singers
+        sthumb = "https://telegra.ph/file/f6086f8909fbfeb0844f2.png"
+        sduration = int(songs.result[0].duration)
     except Exception as e:
         await res.edit("Found Literally Nothing!, You Should Work On Your English.")
         print(str(e))
@@ -744,7 +810,7 @@ async def jiosaavn(client: Client, message_: Message):
             ],
             [
                 InlineKeyboardButton(
-                    text="Join Updates Channel", url=f"{updateschannel}"
+                    text="Join Updates Channel", url=f"https://t.me/{updateschannel}"
                 )
             ],
             [InlineKeyboardButton(text="❌ Close", callback_data="ccls")],
@@ -788,6 +854,3 @@ async def jiosaavn(client: Client, message_: Message):
         caption=f"Playing {sname} Via Jiosaavn in linked channel",
     )
     os.remove("final.png")
-
-
-# Have u read all. If read RESPECT :-)
