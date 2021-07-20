@@ -20,13 +20,13 @@ Note:- Add @Group_music_pro and @Group_music_Probot to your group and make an ad
             [
                 [
                     InlineKeyboardButton(
-                        "🛠 Commands 🛠", url="https://t.me/Group_Music_Probot?start=help")
+                        "🛠 Commands 🛠", url="https://telegra.ph/Commands-07-20")
                   ],[
                     InlineKeyboardButton(
-                        "💬 Music Lovers", url="https://t.me/Hindi_K_drama_1"
+                        "💬 Music Lovers 💬", url="https://t.me/Hindi_K_drama_1"
                     ),
                     InlineKeyboardButton(
-                        "💬 Support Group", url="https://t.me/Cutiepii_Support"
+                        "💬 Support Group 💬", url="https://t.me/Cutiepii_Support"
                     )
                 ],[ 
                     InlineKeyboardButton(
@@ -51,7 +51,7 @@ async def gstart(_, message: Message):
             [
                 [
                     InlineKeyboardButton(
-                        "💬 Support Chat", url=f"https://t.me/{SUPPORT_GROUP}"
+                        "💬 Support Chat 💬", url=f"https://t.me/{SUPPORT_GROUP}"
                     )
                 ]
             ]
