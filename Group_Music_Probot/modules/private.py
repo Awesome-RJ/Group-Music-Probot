@@ -20,7 +20,7 @@ Note:- Add @Group_music_pro and @Group_music_Probot to your group and make an ad
             [
                 [
                     InlineKeyboardButton(
-                        "🛠 Commands 🛠", url="https://telegra.ph/Commands-04-20")
+                        "🛠 Commands 🛠", url="https://t.me/Group_Music_Probot?start=help")
                   ],[
                     InlineKeyboardButton(
                         "💬 Music Lovers", url="https://t.me/Hindi_K_drama_1"
