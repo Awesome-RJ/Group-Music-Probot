@@ -13,29 +13,27 @@ async def start(_, message: Message):
     await message.reply_photo(GROUP_MUSIC_PROBOT_IMG)
     await message.reply_text(
         f"""**Hey, I'm {BOT_NAME} 🎵
+        
 I am Group Music Probot, I Am an Advance And Powerful Telegram Groups Voice Chat Music Bot.
-Note:- Add @Group_music_pro and @Group_music_Probot to your group and make an admin.
+
+Try the /help Command below to know my abilities.
         """,
         reply_markup=InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton(
-                        "🛠 Commands 🛠", url="https://telegra.ph/Commands-07-20")
+                        "👥 𝙰𝚍𝚍 Group Music Probot 𝚃𝚘 𝚈𝚘𝚞𝚛 𝙶𝚛𝚘𝚞𝚙 👥", url="https://t.me/Group_Music_ProBot?startgroup=true")
                   ],[
                     InlineKeyboardButton(
                         "💬 Music Lovers 💬", url="https://t.me/HindiKDrama"
                     ),
                     InlineKeyboardButton(
-                        "💬 Support Group 💬", url="https://t.me/Cutiepii_Support"
+                        "🙋 𝚂𝚞𝚙𝚙𝚘𝚛𝚝 𝙲𝚑𝚊𝚝 🙋", url="https://t.me/Black_Knights_Union_Support"
                     )
                 ],[ 
                     InlineKeyboardButton(
                         "💁 Assistant 💁", url="https://t.me/Group_Music_Pro"
                     )],
-                    [ 
-                    InlineKeyboardButton(
-                        "➕ Add To Your Group ➕", url="https://t.me/Group_Music_ProBot?startgroup=true"
-                    )]
             ]
         ),
      disable_web_page_preview=True
