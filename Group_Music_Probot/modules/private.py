@@ -1,54 +1,50 @@
-# Group_Music_Probot (Telegram bot project )
-# Copyright (C) 2021  Inukaasith
-
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
-
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 import logging
 from Group_Music_Probot.modules.msg import Messages as tr
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
-from Group_Music_Probot.config import SOURCE_CODE,ASSISTANT_NAME,PROJECT_NAME,SUPPORT_GROUP,UPDATES_CHANNEL,BOT_USERNAME
+from Group_Music_Probot.config import SOURCE_CODE,ASSISTANT_NAME,PROJECT_NAME,SUPPORT_GROUP,UPDATES_CHANNEL,BOT_USERNAME, BOT_NAME
+
 logging.basicConfig(level=logging.INFO)
 
-@Client.on_message(filters.private & filters.incoming & filters.command(['start']))
-def _start(client, message):
-    client.send_message(message.chat.id,
-        text=tr.START_MSG.format(message.from_user.first_name, message.from_user.id),
-        parse_mode="markdown",
+@Client.on_message(filters.command("start") & filters.private & ~filters.channel)
+async def start(_, message: Message):
+    await message.reply_photo(GROUP_MUSIC_PROBOT_IMG)
+    await message.reply_text(
+        f"""**Hey, I'm {BOT_NAME} 🎵
+I am Group Music Probot, I Am an Advance And Powerful Telegram Groups Voice Chat Music Bot.
+Note:- Add @Group_music_pro and @Group_music_Probot to your group and make an admin.
+        """,
         reply_markup=InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton(
-                        "➕ Add me to your Group 🙋‍♀️", url=f"https://t.me/{BOT_USERNAME}?startgroup=true")],
-                [
+                        "🛠 Commands 🛠", url="https://telegra.ph/Commands-04-20")
+                  ],[
                     InlineKeyboardButton(
-                        "📲 Updates", url=f"https://t.me/{UPDATES_CHANNEL}"), 
+                        "💬 Music Lovers", url="https://t.me/Hindi_K_drama_1"
+                    ),
                     InlineKeyboardButton(
-                        "💬 Support", url=f"https://t.me/{SUPPORT_GROUP}")
-                ],[
+                        "💬 Support Group", url="https://t.me/Cutiepii_Support"
+                    )
+                ],[ 
                     InlineKeyboardButton(
-                        "🛠 Source Code 🛠", url=f"https://{SOURCE_CODE}")
-                ]
+                        "💁 Assistant 💁", url="https://t.me/Group_Music_Pro"
+                    )],
+                    [ 
+                    InlineKeyboardButton(
+                        "➕ Add To Your Group ➕", url="https://t.me/Group_Music_ProBot?startgroup=true"
+                    )]
             ]
         ),
-        reply_to_message_id=message.message_id
-        )
+     disable_web_page_preview=True
+    )
 
+    
+    
 @Client.on_message(filters.command("start") & ~filters.private & ~filters.channel)
 async def gstart(_, message: Message):
     await message.reply_text(
-        f"""**🔴 {PROJECT_NAME} is online**""",
+        f"""*💜 {PROJECT_NAME} is online**""",
         reply_markup=InlineKeyboardMarkup(
             [
                 [
@@ -83,7 +79,6 @@ def help_answer(client, callback_query):
     client.edit_message_text(chat_id=chat_id,    message_id=message_id,
         text=tr.HELP_MSG[msg],    reply_markup=InlineKeyboardMarkup(map(msg))
     )
-
 
 def map(pos):
     if(pos==1):
