@@ -23,7 +23,7 @@ Note:- Add @Group_music_pro and @Group_music_Probot to your group and make an ad
                         "🛠 Commands 🛠", url="https://telegra.ph/Commands-07-20")
                   ],[
                     InlineKeyboardButton(
-                        "💬 Music Lovers 💬", url="https://t.me/Hindi_K_drama_1"
+                        "💬 Music Lovers 💬", url="https://t.me/HindiKDrama"
                     ),
                     InlineKeyboardButton(
                         "💬 Support Group 💬", url="https://t.me/Cutiepii_Support"
