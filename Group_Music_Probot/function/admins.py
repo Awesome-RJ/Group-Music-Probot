@@ -10,6 +10,4 @@ def set(chat_id: int, admins_: List[int]):
 
 
 def get(chat_id: int) -> List[int]:
-    if chat_id in admins:
-        return admins[chat_id]
-    return []
+    return admins[chat_id] if chat_id in admins else []
