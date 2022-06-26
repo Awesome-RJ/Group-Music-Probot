@@ -14,10 +14,8 @@ from Group_Music_Probot.services.queues import queues
 @Client.on_message(filters.command("admincache"))
 async def update_admin(client, message):
     global admins
-    new_admins = []
     new_ads = await client.get_chat_members(message.chat.id, filter="administrators")
-    for u in new_ads:
-        new_admins.append(u.user.id)
+    new_admins = [u.user.id for u in new_ads]
     admins[message.chat.id] = new_admins
     await message.reply_text("❇️ Admin cache refreshed!")
 

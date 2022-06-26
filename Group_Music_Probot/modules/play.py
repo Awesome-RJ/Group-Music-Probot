@@ -44,9 +44,8 @@ def cb_admin_check(func: Callable) -> Callable:
         admemes = a.get(cb.message.chat.id)
         if cb.from_user.id in admemes:
             return await func(client, cb)
-        else:
-            await cb.answer("You ain't allowed!", show_alert=True)
-            return
+        await cb.answer("You ain't allowed!", show_alert=True)
+        return
 
     return decorator
 
@@ -83,8 +82,7 @@ def changeImageSize(maxWidth, maxHeight, image):
     heightRatio = maxHeight / image.size[1]
     newWidth = int(widthRatio * image.size[0])
     newHeight = int(heightRatio * image.size[1])
-    newImage = image.resize((newWidth, newHeight))
-    return newImage
+    return image.resize((newWidth, newHeight))
 
 
 async def generate_cover(requested_by, title, views, duration, thumbnail):
@@ -123,13 +121,11 @@ async def generate_cover(requested_by, title, views, duration, thumbnail):
 async def playlist(client, message):
     global que
     if message.chat.id in DISABLED_GROUPS:
-        return    
+        return
     queue = que.get(message.chat.id)
     if not queue:
         await message.reply_text("Player is idle")
-    temp = []
-    for t in queue:
-        temp.append(t)
+    temp = list(queue)
     now_playing = temp[0][0]
     by = temp[0][1].mention(style="md")
     msg = "**Now Playing** in {}".format(message.chat.title)
@@ -166,11 +162,7 @@ def updated_stats(chat, queue, vol=100):
 
 
 def r_ply(type_):
-    if type_ == "play":
-        pass
-    else:
-        pass
-    mar = InlineKeyboardMarkup(
+    return InlineKeyboardMarkup(
         [
             [
                 InlineKeyboardButton("⏹", "leave"),
@@ -186,7 +178,6 @@ def r_ply(type_):
             ],
         ]
     )
-    return mar
 
 
 @Client.on_message(filters.command("current") & filters.group & ~filters.edited)
@@ -194,8 +185,7 @@ async def ee(client, message):
     if message.chat.id in DISABLED_GROUPS:
         return
     queue = que.get(message.chat.id)
-    stats = updated_stats(message.chat, queue)
-    if stats:
+    if stats := updated_stats(message.chat, queue):
         await message.reply(stats)
     else:
         await message.reply("No VC instances running in this chat")
@@ -206,14 +196,11 @@ async def ee(client, message):
 async def settings(client, message):
     if message.chat.id in DISABLED_GROUPS:
         await message.reply("Music Player is Disabled")
-        return    
-    playing = None
+        return
     chat_id = get_chat_id(message.chat)
-    if chat_id in callsmusic.pytgcalls.active_calls:
-        playing = True
+    playing = True if chat_id in callsmusic.pytgcalls.active_calls else None
     queue = que.get(chat_id)
-    stats = updated_stats(message.chat, queue)
-    if stats:
+    if stats := updated_stats(message.chat, queue):
         if playing:
             await message.reply(stats, reply_markup=r_ply("pause"))
 
@@ -240,9 +227,9 @@ async def hfmm(_, message):
         return
     status = message.text.split(None, 1)[1]
     message.chat.id
-    if status == "ON" or status == "on" or status == "On":
+    if status in ["ON", "on", "On"]:
         lel = await message.reply("`Processing...`")
-        if not message.chat.id in DISABLED_GROUPS:
+        if message.chat.id not in DISABLED_GROUPS:
             await lel.edit("Music Player Already Activated In This Chat")
             return
         DISABLED_GROUPS.remove(message.chat.id)
@@ -250,9 +237,9 @@ async def hfmm(_, message):
             f"Music Player Successfully Enabled For Users In The Chat {message.chat.id}"
         )
 
-    elif status == "OFF" or status == "off" or status == "Off":
+    elif status in ["OFF", "off", "Off"]:
         lel = await message.reply("`Processing...`")
-        
+
         if message.chat.id in DISABLED_GROUPS:
             await lel.edit("Music Player Already turned off In This Chat")
             return
@@ -278,9 +265,7 @@ async def p_cb(b, cb):
         queue = que.get(cb.message.chat.id)
         if not queue:
             await cb.message.edit("Player is idle")
-        temp = []
-        for t in queue:
-            temp.append(t)
+        temp = list(queue)
         now_playing = temp[0][0]
         by = temp[0][1].mention(style="md")
         msg = "**Now Playing** in {}".format(cb.message.chat.title)
@@ -346,9 +331,7 @@ async def m_cb(b, cb):
         queue = que.get(cb.message.chat.id)
         if not queue:
             await cb.message.edit("Player is idle")
-        temp = []
-        for t in queue:
-            temp.append(t)
+        temp = list(queue)
         now_playing = temp[0][0]
         by = temp[0][1].mention(style="md")
         msg = "**Now Playing** in {}".format(cb.message.chat.title)
@@ -409,9 +392,7 @@ async def m_cb(b, cb):
     elif type_ == "skip":
         if qeue:
             qeue.pop(0)
-        if chet_id not in callsmusic.pytgcalls.active_calls:
-            await cb.answer("Chat is not connected!", show_alert=True)
-        else:
+        if chet_id in callsmusic.pytgcalls.active_calls:
             queues.task_done(chet_id)
 
             if queues.is_empty(chet_id):
@@ -428,17 +409,18 @@ async def m_cb(b, cb):
                     f"- Skipped track\n- Now Playing **{qeue[0][0]}**"
                 )
 
-    else:
-        if chet_id in callsmusic.pytgcalls.active_calls:
-            try:
-                queues.clear(chet_id)
-            except QueueEmpty:
-                pass
-
-            callsmusic.pytgcalls.leave_group_call(chet_id)
-            await cb.message.edit("Successfully Left the Chat!")
         else:
             await cb.answer("Chat is not connected!", show_alert=True)
+    elif chet_id in callsmusic.pytgcalls.active_calls:
+        try:
+            queues.clear(chet_id)
+        except QueueEmpty:
+            pass
+
+        callsmusic.pytgcalls.leave_group_call(chet_id)
+        await cb.message.edit("Successfully Left the Chat!")
+    else:
+        await cb.answer("Chat is not connected!", show_alert=True)
 
 
 @Client.on_message(command("play") & other_filters)

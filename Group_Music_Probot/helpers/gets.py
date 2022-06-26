@@ -31,4 +31,4 @@ def get_url(message_1: Message) -> Union[str, None]:
 
 
 def get_file_name(audio: Union[Audio, Voice]):
-    return f'{audio.file_unique_id}.{audio.file_name.split(".")[-1] if not isinstance(audio, Voice) else "ogg"}'
+    return f"""{audio.file_unique_id}.{'ogg' if isinstance(audio, Voice) else audio.file_name.split(".")[-1]}"""

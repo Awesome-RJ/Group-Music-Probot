@@ -23,9 +23,7 @@ async def inline(client: Client, query: InlineQuery):
     else:
         search = VideosSearch(search_query, limit=50)
 
-        for result in search.result()["result"]:
-            answers.append(
-                InlineQueryResultArticle(
+        answers.extend(InlineQueryResultArticle(
                     title=result["title"],
                     description="{}, {} views.".format(
                         result["duration"], result["viewCount"]["short"]
@@ -34,9 +32,7 @@ async def inline(client: Client, query: InlineQuery):
                         "https://www.youtube.com/watch?v={}".format(result["id"])
                     ),
                     thumb_url=result["thumbnails"][0]["url"],
-                )
-            )
-
+                ) for result in search.result()["result"])
         try:
             await query.answer(results=answers, cache_time=0)
         except errors.QueryIdInvalid:
